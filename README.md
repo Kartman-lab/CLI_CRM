@@ -1,4 +1,4 @@
-# 🏢 Epic Events — CRM Interne (CLI)
+# Epic Events — CRM Interne (CLI)
 
 CRM interne développé pour l'entreprise **Epic Events**, organisatrice d'événements.
 
@@ -12,7 +12,7 @@ Le projet respecte les bonnes pratiques de sécurité (principe du moindre privi
 
 ---
 
-## 📌 Objectifs
+## Objectifs
 
 - Centraliser les informations clients / contrats / événements  
 - Sécuriser l’accès selon les rôles  
@@ -37,6 +37,7 @@ Sécurité : RBAC, hashing mot de passe |
 
 ## 📂 Structure du projet
 
+``` bash
 .
 ├── app/
 │ ├── cli/
@@ -54,7 +55,7 @@ Sécurité : RBAC, hashing mot de passe |
 ├── README.md
 └── diagramme.md
 
----
+```
 
 ## Fonctionnalités par rôle
 
