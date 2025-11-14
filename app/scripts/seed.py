@@ -24,7 +24,7 @@ try:
         nom="Martin",
         email="gabriel.martin@epic.com",
         departement="Gestion",
-        role=role_gestion,  # ✅ on passe un objet Role
+        role=role_gestion,  
     )
     gestionnaire.set_password("admin123")
 

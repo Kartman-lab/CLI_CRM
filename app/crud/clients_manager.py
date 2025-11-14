@@ -14,7 +14,7 @@ def get_all_clients(current_user):
         clients = session.query(Client).all()
         return clients
 @sentry_wrap
-def get_client_by_id(current_user, client_id):
+def get_client_by_id(client_id):
     with SessionLocal() as session:
         client = session.query(Client).filter(Client.id==client_id).first()
         if not client:

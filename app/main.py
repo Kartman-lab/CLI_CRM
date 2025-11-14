@@ -20,7 +20,14 @@ def cli():
 
 @click.command()
 def login():
-    login_view()
+    if login_view(): 
+        user = get_user()
+        if user.role.nom == 'commercial':
+            commercial_menu_view(user)
+        elif user.role.nom == 'gestion':
+            gestion_menu_view(user)
+        elif user.role.nom == 'support':
+            support_menu_view(user)
 
 def get_user():
     token = load_session()

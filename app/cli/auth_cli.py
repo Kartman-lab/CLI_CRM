@@ -14,4 +14,5 @@ def login_view():
     if not user:
         console.print("[red] Email ou mot de passe non valide.[/red]")
         return 
-    console.print(f"[green] Bienvenue {user.prenom} ({user.role})[/green]")
+    console.print(f"[green] Bienvenue {user.prenom} ({user.role.nom})[/green]")
+    return user

@@ -124,7 +124,7 @@ class EventsController:
             }
 
             crud_update_event(event_id, **updated_data)
-            print("[green]Évènement mis à jour.[/green]")
+            console.print("[green]Évènement mis à jour.[/green]")
 
         except KeyboardInterrupt as k:
             console.print(f"[yellow]{k}[/yellow]")

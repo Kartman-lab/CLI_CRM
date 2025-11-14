@@ -81,7 +81,7 @@ class ClientController:
         }
 
         try:
-            updated_client = crud_update_client(client_id, updated_data)
+            updated_client = crud_update_client(self.user, client_id, **updated_data)
             console.print(f"[green]Client : {updated_client.fullname} correctement mis à jour.[/green]")
         except ValueError as e:
             console.print(f"[red]{e}[/red]")
