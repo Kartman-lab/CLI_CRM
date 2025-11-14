@@ -124,7 +124,7 @@ def gestion_events(user):
             event_controller.event_table(events, "Évènements sans supprot associé")
         elif choix == "3":
             clear_console()
-            event_controller.associate_support_to_event(user)
+            event_controller.associate_support_to_event()
         elif choix == "4":
             clear_console()
             break

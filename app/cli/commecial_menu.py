@@ -1,10 +1,11 @@
 from rich.console import Console
-from app.crud.contracts_manager import get_all_contracts, get_contract_by_commercial
-from app.crud.clients_manager import create_client, get_all_clients
+from app.crud.contracts_manager import get_contract_by_commercial
+from app.crud.clients_manager import get_all_clients
 from app.controllers.clients_controller import ClientController
 from app.controllers.contracts_controller import ContractsController
 from app.controllers.events_controller import EventsController
 from app.crud.auth_manager import clear_session
+from app.utils import clear_console
 
 console = Console()
 
@@ -26,22 +27,29 @@ def commercial_menu(user):
         choix = input("> ")
 
         if choix == "1":
+            clear_console()
             clients = get_all_clients(user)
             client_controller.client_talbe(clients, "Clients")
         elif choix == "2":
+            clear_console()
             data = client_controller.prompt_client_data()
             client_controller.create_client(data)
         elif choix == "3":
+            clear_console()
             client_id = client_controller.prompt_udpate_client_data()
             client_controller.updates_client(client_id)
         elif choix == "4":
+            clear_console()
             contracts = get_contract_by_commercial(user, user.id)
             contracts_controller.contract_table(contracts, "Contrats")
         elif choix == "5":
+            clear_console()
             contracts_controller.show_not_signed_contracts()
         elif choix == "6":
+            clear_console()
             contracts_controller.show_not_fully_payed_contracts()
         elif choix == "7":
+            clear_console()
             events_controller.create_event_for_client()
         elif choix == "8":
             clear_session()

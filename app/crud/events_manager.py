@@ -2,7 +2,7 @@ from sqlalchemy.orm import joinedload
 
 from app.db.base import SessionLocal
 from app.models.events import Event
-from app.models.users import Collaborateur
+from app.models.users import Collaborateur, Role
 from app.models.contracts import Contract
 from app.security.permission import require_auth, require_role
 from app.sentry.decorateur_sentry import sentry_wrap
@@ -19,7 +19,7 @@ def get_all_events(current_user):
         return events
 
 @sentry_wrap
-def get_event_by_id(current_user, event_id): 
+def get_event_by_id(event_id): 
     with SessionLocal() as session:
         event = session.query(Event).filter_by(id=event_id).first()
         if not event:
@@ -53,7 +53,16 @@ def assign_event_support(current_user, event_id, collaborateur_id):
         if event.support_contact_id is not None: 
             raise ValueError("Cet évènement a déjà un support associé.")
 
-        support = session.query(Collaborateur).filter_by(id=collaborateur_id, role='support').first()
+        support = (
+            session.query(Collaborateur)
+            .join(Collaborateur.role)
+            .filter(
+                Collaborateur.id == int(collaborateur_id),
+                Role.nom == "support" 
+            )
+            .first()
+        )
+
         if not support:
             raise ValueError("Ce collaborateur n'est pas un membre du support.")
 
@@ -97,7 +106,7 @@ def create_event_for_client(current_user, contract_id, start_date, end_date, loc
 
 
 @sentry_wrap  
-def update_event(current_user, event_id, **updates):
+def update_event(event_id, **updates):
     with SessionLocal() as session:
         event = session.query(Event).filter_by(id=event_id).first()
 

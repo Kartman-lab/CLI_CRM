@@ -14,6 +14,7 @@ class EventsController:
         self.user = current_user
 
     def event_table(self, events, title):
+        events = sorted(events, key=lambda e: e.id)
         table = Table(show_header=True, header_style="bold magenta", title=title)
         table.add_column("ID")
         table.add_column("Date de début")
@@ -113,16 +114,16 @@ class EventsController:
             notes = quit_fonction("Notes >").strip() or event.notes
 
             updated_data = {
-                "contract_id": event.contrat_id,
+                "contract_id": event.contract_id,
                 "start_date": start_date,
                 "end_date": end_date,
                 "location": location,
                 "attendiees": attendiees,  
                 "notes": notes,
-                "support_id": event.support_id
+                "support_id": event.support_contact_id
             }
 
-            crud_update_event(self.user, updated_data)
+            crud_update_event(event_id, **updated_data)
             print("[green]Évènement mis à jour.[/green]")
 
         except KeyboardInterrupt as k:

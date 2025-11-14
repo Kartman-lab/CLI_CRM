@@ -74,21 +74,16 @@ cli.add_command(commercial_menu)
 cli.add_command(gestion_menu)
 cli.add_command(support_menu)
 
-# simuler un utilisateur CLI pour Release Health
-sentry_sdk.set_user({
-    "id": random.randint(1, 1000),
-    "username": f"user{random.randint(1, 1000)}"
-})
-
-# Démarrer une session
-sentry_sdk.start_session()
-
 if __name__ == "__main__":
+    # Associer un utilisateur simulé à la session
+    sentry_sdk.set_user({
+        "id": random.randint(1, 1000),
+        "username": f"user{random.randint(1, 1000)}"
+    })
+
     try:
-        cli()  # CRM CLI
+        cli()  # Lance ton interface CLI principale
     except Exception as e:
-        sentry_sdk.capture_exception(e)  # envoie le crash à Sentry
+        # Capture automatiquement toutes les exceptions non gérées
+        sentry_sdk.capture_exception(e)
         raise
-    finally:
-        # Terminer la session pour que Release Health la voie
-        sentry_sdk.end_session()

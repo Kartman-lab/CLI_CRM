@@ -1,54 +1,76 @@
 ```mermaid
 erDiagram
-    %% Définition des entités
+    direction LR
+
+    %% ENTITÉS ================================
+
     CLIENT {
-        int id
-        string nom
-        string prenom
+        int id PK
+        string fullname
         string email
         string telephone
         string entreprise
-        date date_creation
-        date date_maj
+        datetime date_created
+        datetime date_updated
+        int commercial_id FK
     }
-    CONTRAT {
-        int id
-        client_fullname
-        commercial_fullname
-        string statut
-        float montant_total
-        float montant_restant
-        int client_id
+
+    CONTRACT {
+        int id PK
+        int total_amount
+        int amount_left
+        datetime date_created
+        boolean statut
+        int client_id FK
+        int commercial_id FK
     }
-    EVENEMENT {
-        int id
-        string titre
-        date date_debut
-        date date_fin
+
+    EVENT {
+        int id PK
+        date start_date
+        date end_date
         string location
-        int attendees
+        int attendiees
         string notes
-        int contrat_id
-        int support_id
+        int contract_id FK
+        int client_id FK
+        int support_contact_id FK
     }
+
     COLLABORATEUR {
-        int id
+        int id PK
         string nom
         string prenom
         string email
         string departement
-        int role_id
-    }
-    ROLE {
-        int id
-        string nom_role
+        string password_hash
+        int role_id FK
     }
 
-    %% Relations principales
-    CLIENT ||--o{ CONTRAT : "possède"
-    CONTRAT ||--o{ EVENEMENT : "contient"
-    CLIENT ||--o{ COLLABORATEUR : "est géré par"
-    COLLABORATEUR ||--o{ ROLE : "a un"
-    EVENEMENT ||--o{ COLLABORATEUR : "est géré par"
+    ROLE {
+        int id PK
+        string nom
+    }
+
+    %% RELATIONS ================================
+
+    %% Un rôle possède plusieurs collaborateurs
+    ROLE ||--o{ COLLABORATEUR : "attribué à"
+
+    %% Un collaborateur gère plusieurs clients (commercial)
+    COLLABORATEUR ||--o{ CLIENT : "gère"
+
+    %% Un client possède plusieurs contrats
+    CLIENT ||--o{ CONTRACT : "possède"
+
+    %% Un contrat possède plusieurs événements
+    CONTRACT ||--o{ EVENT : "inclut"
+
+    %% Un client a plusieurs événements (répété dans modèle : client_id FK dans Event)
+    CLIENT ||--o{ EVENT : "lié à"
+
+    %% Un collaborateur support gère plusieurs événements
+    COLLABORATEUR ||--o{ EVENT : "support de"
+
 
 ```
