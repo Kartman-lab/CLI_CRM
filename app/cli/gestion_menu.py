@@ -93,7 +93,7 @@ def gestion_contrats(user):
             contract_controller.create_contract()
         elif choix == "3":
             clear_console()
-            contract_controller.update_contract(user)
+            contract_controller.update_contract()
         elif choix == "4":
             clear_console()
             break

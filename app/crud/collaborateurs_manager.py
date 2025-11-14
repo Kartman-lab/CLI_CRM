@@ -16,12 +16,20 @@ def get_all_collaborateurs(current_user):
         return collaborateurs
 
 @sentry_wrap  
-def get_collaborateur_by_id(current_user, collaborateur_id):
+def get_collaborateur_by_id(collaborateur_id):
     with SessionLocal() as session:
-        collaborateur = session.query(Collaborateur).filter_by(id=collaborateur_id).first()
+        collaborateur = session.query(Collaborateur).options(
+            joinedload(Collaborateur.role),
+            joinedload(Collaborateur.contracts)
+        ).filter_by(id=collaborateur_id).first()
         if not collaborateur:
             raise ValueError("Aucun collaborateur avec cet id.")
         return collaborateur
+    
+def get_role_by_name(role_name):
+    with SessionLocal() as session:
+        role = session.query(Role).filter_by(nom=role_name).first()
+        return role
 
 @sentry_wrap    
 def get_all_commercials(current_user):
@@ -90,22 +98,27 @@ def create_collaborateur(current_user, nom, prenom, email, departement, role, pa
         return new_collaborateur
 
 
-@sentry_wrap   
-def update_collaborateur(current_user, collaborator_id, **updates):
+@sentry_wrap
+def update_collaborateur(collaborator_id, **updates):
     with SessionLocal() as session:
         collaborator = session.query(Collaborateur).filter_by(id=collaborator_id).first()
 
         if not collaborator:
             raise ValueError("Aucun collaborateur trouvé.")
-        
+
+       # --- Gestion des relations (ex: ajout de contrat) ---
+        add_contract = updates.pop("add_contract", None)
+        if add_contract is not None:  # add_contract doit être un objet Contract
+            collaborator.contracts.append(add_contract)
+
+        # --- Mise à jour des champs ---
         for key, value in updates.items():
-            if hasattr(collaborator, key):
+            if hasattr(collaborator, key) and value is not None:
                 setattr(collaborator, key, value)
 
         session.commit()
         session.refresh(collaborator)
 
-     
         return collaborator
 
 

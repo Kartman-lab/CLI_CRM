@@ -30,11 +30,16 @@ def get_contract_by_commercial(current_user, commercial_id):
         return contracts
 
 @sentry_wrap
-def get_contract_by_id(current_user, contract_id):
+def get_contract_by_id(contract_id):
     with SessionLocal() as session:
-        contract = session.query(Contract).filter_by(id=contract_id).first()
+        contract = session.query(Contract).options(
+            joinedload(Contract.client),
+            joinedload(Contract.commercial),
+            joinedload(Contract.events)
+        ).filter_by(id=contract_id).first()
         if not contract:
             raise ValueError("Aucun contrat ne correspond à cet id.")
+        return contract
 
 @sentry_wrap
 def get_contract_not_signed(current_user):

@@ -114,13 +114,13 @@ class ContractsController:
             update_data = {
                 "total_amount": total_amout or contract.total_amount,
                 "amount_left": amount_left or contract.amount_left,
-                "client_fullname": client_fullname or contract.client_fullname,
-                "commercial_fullname": commercial_fullname or contract.commercial_fullname,
+                "client_fullname": client_fullname or contract.client.fullname,
+                "commercial_fullname": commercial_fullname or contract.commercial.nom,
                 "statut": statut or contract.statut
     
             }
 
-            crud_create_contract(self.user, contract_id, **update_data)
+            crud_update_contract(self.user, contract_id, **update_data)
 
         except KeyboardInterrupt as k:
             console.print(f"[yellow]{k}[/yellow]")

@@ -2,7 +2,7 @@ from rich.console import Console
 from rich.table import Table 
 
 from app.crud.collaborateurs_manager import create_collaborateur as crud_create_collaborateur, get_collaborateur_by_id, update_collaborateur as crud_update_collaborateur
-from app.crud.collaborateurs_manager import delete_collaborateur as crud_delete_collaborateur
+from app.crud.collaborateurs_manager import delete_collaborateur as crud_delete_collaborateur, get_role_by_name
 from app.crud.contracts_manager import get_contract_by_id
 from app.utils import quit_fonction
 
@@ -66,51 +66,64 @@ class CollaborateurController:
 
     def prompt_update_collaborateur(self):
          console.print("[bold blue]=== Modification d'un client ===[/bold blue]")
-         collaborateur_id = input("Entrer l'id du client ('Q' pour retour)")
+         collaborateur_id = quit_fonction("Entrer l'id du client ('Q' pour retour)")
          return collaborateur_id
     
     def update_collaborateur(self, collaborateur_id):
         try:
             collaborateur = get_collaborateur_by_id(collaborateur_id)
         except ValueError as e:
-            console.print("[red]{e}[/red]")
+            console.print(f"[red]{e}[/red]")
             return
         
         console.print("Entrer les nouveaux champs (laisser vide pour ne pas modifier) :")
         nom = quit_fonction("Nom")
         prenom = quit_fonction("Prenom")
-        email = quit_fonction("Email >")
+        email = quit_fonction("Email")
         departement = quit_fonction("Departement")
-        role = quit_fonction("Role (parmi : 'gestion', 'commercial', 'support')")
-        contract_id = quit_fonction("Id du contrat pour attribuer au commercial")
+        role_str = quit_fonction("Role (parmi : 'gestion', 'commercial', 'support')")
+        role_id = None
+        if role_str:
+            role = get_role_by_name(role_str)
+            if role:
+                role_id = role.id
 
-        if contract_id:
+        contract_id_str = quit_fonction("Id du contrat pour attribuer au commercial")
+
+        contract = None
+        if contract_id_str:  # uniquement si l'utilisateur a entré quelque chose
             try:
-                contract = get_contract_by_id(contract_id)
+                contract_id = int(contract_id_str)  # convertit la chaîne en int
+                contract = get_contract_by_id(contract_id)  # renvoie un objet Contract
             except ValueError as e:
                 console.print(f"[red]{e}[/red]")
                 return
 
         updated_data = {
             "nom": nom or collaborateur.nom,
-             "premom": prenom or collaborateur.prenom,
-             "email": email or collaborateur.email,
-             "telephone": departement or collaborateur.departement,
-             "role": role or collaborateur.role,
-             "contracts": collaborateur.contracts.append(contract) or collaborateur.contracts 
+            "prenom": prenom or collaborateur.prenom,
+            "email": email or collaborateur.email,
+            "departement": departement or collaborateur.departement,
         }
 
+        if role_id:
+            updated_data["role_id"] = role_id
+
+        # Ajouter un contrat uniquement si un contrat a été fourni
+        if contract:
+            updated_data["add_contract"] = contract
+
         try:
-            update_collaborateur = crud_update_collaborateur(collaborateur_id, updated_data)
-            console.print(f"[green]Collaborateur {update_collaborateur.nom} mis à jour.[/greem]")
+            updated_collab = crud_update_collaborateur(collaborateur_id, **updated_data)
+            console.print(f"[green]Collaborateur {updated_collab.nom} mis à jour.[/green]")
         except ValueError as e:
             console.print(f"[red]{e}[/red]")
-            return 
-        
+
+            
     def delete_collaborateur(self):
         console.print("[bold blue]=== Suppression d'un collaborateur ===[/bold blue]")
         collaborateur_id = quit_fonction("Entrer l'id du collaborateur")
-        collaborateur = get_collaborateur_by_id(self.user, collaborateur_id)
+        collaborateur = get_collaborateur_by_id(collaborateur_id)
         confirmation = quit_fonction(f"[orange]Etes vous sur de vouloir supprimer {collaborateur.nom}. (Entrer OUI pour confirmer 'q' pour abandonner)[/orange]")
 
         if confirmation.upper() == 'OUI':
